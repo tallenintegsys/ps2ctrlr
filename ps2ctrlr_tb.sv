@@ -48,9 +48,8 @@ end
 
 ps2ctrlr uut (
     .CLOCK_50,
-    .KEY,
-    .LEDR,
-    .LEDG,
+    .q (LEDG[7:0]),
+    .clr (KEY[1]),
     .PS2_DAT,
     .PS2_CLK);
 

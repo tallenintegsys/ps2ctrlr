@@ -1,9 +1,8 @@
 `timescale 10ns/10ps
 module ps2ctrlr (
     input   CLOCK_50,
-    input   [3:0]KEY,
-    output  logic [8:0]LEDG,
-    output  logic [17:0]LEDR,
+    output  logic [7:0] q,
+    input   clr,
     input   PS2_DAT,
     input   PS2_CLK);
 
@@ -15,7 +14,6 @@ logic [3:0]kb_count;
 logic [15:0]kb_dat;
 logic lift, shift;
 logic kbs;
-logic [7:0]q;
 
 initial begin
     dat_buffer = 16'd0;
@@ -29,11 +27,6 @@ initial begin
     shift = 0;
     q = 0;
 end
-
-assign  kbs = KEY[1];
-assign  LEDG[7:0] = q;
-assign  LEDG[8] = shift;
-assign  LEDR[15:0] = kb_dat;
 
 // Module Item(s)
 always @ (posedge CLOCK_50) begin
@@ -53,7 +46,7 @@ end //always
 always @ (negedge ps2_clk) begin
     kb_count = kb_count + 1;
     case (kb_count)
-        0: ; // start (lift)
+        0: ; // start
         1: kb_dat[0] = ps2_dat;
         2: kb_dat[1] = ps2_dat;
         3: kb_dat[2] = ps2_dat;
@@ -62,7 +55,7 @@ always @ (negedge ps2_clk) begin
         6: kb_dat[5] = ps2_dat;
         7: kb_dat[6] = ps2_dat;
         8: kb_dat[7] = ps2_dat;
-        9: ; // XXX parity (lift)
+        9: ; // XXX parity
         default: begin //stop
             kb_count = 4'hf; //get ready for next key
             if (kb_dat == 8'hf0) begin // F0
